@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
 set -o errexit
 set -o nounset
@@ -23,14 +24,19 @@ usage () {
    echo "Usage: sapfile [OPTION...] [FILE...]"
    echo "Determine type of SAP FILEs, optionally followed by type of FILEs."
    echo "  -h, --help                 display this help and exit"
-   echo "  -i                         also display the output of the plain file command for this FILE"
+   echo "  -f                         also display the output of the plain file command for this FILE"
+   echo ""
+   echo "Requires:"
+   echo "- lsar (contained in the unar package from the EPEL RHEL repo)"
+   echo "- zipinfo (contained in the unzip RHEL package)"
+   echo "- sapcar (SAP program to handle sapcar files; typical filename: SAPCAR_1115-70006178.EXE)"
 }
 
 if [[ $# == 0 || ${1}. == "-h." || ${1}. == "--help." ]]; then
    usage
    exit 1
 fi
-if [[ ${1}. == "-i." ]]; then
+if [[ ${1}. == "-f." ]]; then
    _RUN_FILE_COMMAND="y"
    shift 1
 else
@@ -40,6 +46,9 @@ fi
 for _FILE in "$@"; do
    if [[ ${_RUN_FILE_COMMAND}. = "y." ]]; then
       _FILE_OUTPUT=$(file "${_FILE}" | sed 's,'"${_FILE}"': ,,')
+      if [[ ${_FILE_OUTPUT}. == "data." ]] && [[ (${_FILE##*.} = "SAR" || ${_FILE##*.} = "sar") ]]; then
+         _FILE_OUTPUT="SAPCAR archive data - from file extension"
+      fi
    else
       _FILE_OUTPUT=""
    fi
@@ -57,15 +66,16 @@ for _FILE in "$@"; do
    _FILE_TYPE=$(echo "${_FILE}" | awk '
    BEGIN{_sap_file_type="look_inside"}
    /SAPCAR/&&/\.EXE/{_sap_file_type="sapcar"}
-   /IMDB/&&/\.SAR/{_sap_file_type="sap_hana"}
+   !/IMDB_SERVER/&&!/IMDB_CLIENT/&&/IMDB/&&/\.SAR/{_sap_file_type="sap_db_hana_other"}
+   /IMDB_SERVER/&&/\.SAR/{_sap_file_type="sap_db_hana"}
+   /IMDB_CLIENT/&&/\.SAR/{_sap_file_type="sap_db_hana_client"}
    /SWPM/&&/\.SAR/{_sap_file_type="sap_swpm"}
    /SAPHOSTAGENT/&&/\.SAR/{_sap_file_type="sap_hostagent"}
    /igsexe/||/igshelper/{_sap_file_type="sap_igs"}
    /SAPEXE_/||/SAPEXEDB_/{_sap_file_type="sap_kernel"}
    /SAPWEBDISP_/{_sap_file_type="sap_webdisp"}
    /SAPJVM/{_sap_file_type="sap_jvm"}
-   /ASEBC/{_sap_file_type="sap_db_ase"}
-   /DBATL/{_sap_file_type="sap_db_oracle"}
+   /ASEBC/{_sap_file_type="sap_db_ase_client"}
    /COMPLETE/{_sap_file_type="sap_hana_backup"}
    /S4/&&/HANA/&&/LANG/{_sap_file_type="sap_s4hana_lang"}
    /S4/&&/EXPORT/{_sap_file_type="sap_s4hana_export"}
@@ -96,9 +106,13 @@ for _FILE in "$@"; do
          _SAP_FILE_TYPE=$(eval "${_list_content}" "${_FILE}" | awk '
          BEGIN{_sap_file_type="sap_unknown"}
          /BD_SYBASE_ASE/{_sap_file_type="sap_db_ase"}
+         /ASEBC/{_sap_file_type="sap_db_ase_client"}
          /MaxDB_7.9/{_sap_file_type="sap_db_maxdb"}
-         /19cinstall.sh/||/OCL_LINUX_X86_64/{_sap_file_type="sap_db_oracle"}
-         /db2setup/||/db6_update_client.sh/||/db2aese_c.lic/{_sap_file_type="sap_db_db2"}
+         /19cinstall.sh/{_sap_file_type="sap_db_oracle"}
+         /OCL_LINUX_X86_64/{_sap_file_type="sap_db_oracle_client"}
+         /db2setup/{_sap_file_type="sap_db_db2"}
+         /db6_update_client.sh/{_sap_file_type="sap_db_db2_client"}
+         /db2aese_c.lic/{_sap_file_type="sap_db_db2_license"}
          /DATA_UNITS\/EXPORT/{_sap_file_type="sap_ecc_export"}
          /EXP[0-9]/{_sap_file_type="sap_ecc_ides_export"}
          /DATA_UNITS\/EXP[0-9]/{_sap_file_type="sap_nwas_abap_export"}
