@@ -24,7 +24,7 @@ usage () {
    echo "Usage: sapfile [OPTION...] [FILE...]"
    echo "Determine type of SAP FILEs, optionally followed by type of FILEs."
    echo "  -h, --help                 display this help and exit"
-   echo "  -f                         also display the output of the plain file command for this FILE"
+   echo "  -l                         long listing: also display the output of the plain file command for this FILE"
    echo ""
    echo "Requires:"
    echo "- lsar (contained in the unar package from the EPEL RHEL repo)"
@@ -32,16 +32,25 @@ usage () {
    echo "- sapcar (SAP program to handle sapcar files; typical filename: SAPCAR_1115-70006178.EXE)"
 }
 
-if [[ $# == 0 || ${1}. == "-h." || ${1}. == "--help." ]]; then
-   usage
-   exit 1
-fi
-if [[ ${1}. == "-f." ]]; then
-   _RUN_FILE_COMMAND="y"
-   shift 1
-else
-   _RUN_FILE_COMMAND="n"
-fi
+_RUN_FILE_COMMAND="n"
+
+while getopts ":lh" opt; do
+   case ${opt} in
+      l)
+         _RUN_FILE_COMMAND="y"
+         ;;
+      h)
+         usage
+         exit 1
+         ;;
+      \?)
+         echo "Invalid option -$OPTARG"
+         usage
+         exit 1
+         ;;
+   esac
+done
+shift "$((OPTIND-1))"
 
 for _FILE in "$@"; do
    if [[ ${_RUN_FILE_COMMAND}. = "y." ]]; then
