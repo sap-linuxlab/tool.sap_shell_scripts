@@ -59,7 +59,7 @@ for _FILE in "$@"; do
       _ARCHIVE_TYPE="sapcar"
       _list_content="sapcar -tvf"
    else
-      _ARCHIVE_TYPE=$(echo ${_FILE_OUTPUT} | awk '
+      _ARCHIVE_TYPE=$(echo "${_FILE_OUTPUT}" | awk '
       BEGIN{_file_type="other"}
       /RAR self-extracting archive/{_file_type="rarexe"}
       /RAR archive data/{_file_type="rar"}
