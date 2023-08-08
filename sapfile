@@ -169,7 +169,7 @@ for _FILE in "$@"; do
       ibmdb2|ibmdb2_client|ibmdb2_license)
          _DIRECTORY="ibmdb2"
          ;;
-      sap_hana|sap_hana_client|sap_hana_other)
+      saphana|saphana_client|saphana_other)
          _DIRECTORY="saphana"
          ;;
       sap_swpm|sap_kernel|sap_igs|sap_webdisp|sap_jvm)
