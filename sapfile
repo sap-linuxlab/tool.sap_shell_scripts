@@ -101,9 +101,9 @@ for _FILE in "$@"; do
    SAP_FILE_TYPE_FROM_FILENAME=$(echo "${_FILE}" | awk '
    BEGIN{_sap_file_type="look_inside"}
    /SAPCAR/&&/\.EXE/{_sap_file_type="sapcar"}
-   /IMDB_SERVER/&&/\.SAR/{_sap_file_type="sap_hana"}
-   /IMDB_CLIENT/&&/\.SAR/{_sap_file_type="sap_hana_client"}
-   !/IMDB_SERVER/&&!/IMDB_CLIENT/&&/IMDB/&&/\.SAR/{_sap_file_type="sap_hana_other"}
+   /IMDB_SERVER/&&/\.SAR/{_sap_file_type="saphana"}
+   /IMDB_CLIENT/&&/\.SAR/{_sap_file_type="saphana_client"}
+   !/IMDB_SERVER/&&!/IMDB_CLIENT/&&/IMDB/&&/\.SAR/{_sap_file_type="saphana_other"}
    /SWPM/&&/\.SAR/{_sap_file_type="sap_swpm"}
    /SAPHOSTAGENT/&&/\.SAR/{_sap_file_type="sap_hostagent"}
    /SAPEXE_/||/SAPEXEDB_/{_sap_file_type="sap_kernel"}
@@ -111,7 +111,7 @@ for _FILE in "$@"; do
    /SAPWEBDISP_/{_sap_file_type="sap_webdisp"}
    /SAPJVM/{_sap_file_type="sap_jvm"}
    /ASEBC/{_sap_file_type="sapase_client"}
-   /COMPLETE/{_sap_file_type="sap_hana_backup"}
+   /COMPLETE/{_sap_file_type="saphana_backup"}
    /S4/&&/HANA/&&/LANG/{_sap_file_type="sap_s4hana_lang"}
    /S4/&&/EXPORT/{_sap_file_type="sap_s4hana_export"}
    /BW4/&&/EXPORT/{_sap_file_type="sap_bw4hana_export"}
@@ -170,7 +170,7 @@ for _FILE in "$@"; do
          _DIRECTORY="ibmdb2"
          ;;
       sap_hana|sap_hana_client|sap_hana_other)
-         _DIRECTORY="sap_hana"
+         _DIRECTORY="saphana"
          ;;
       sap_swpm|sap_kernel|sap_igs|sap_webdisp|sap_jvm)
          _DIRECTORY="sap_swpm"
