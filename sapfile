@@ -89,9 +89,9 @@ for _FILE in "$@"; do
    SAP_FILE_TYPE_FROM_FILENAME=$(echo "${_FILE}" | awk '
    BEGIN{_sap_file_type="look_inside"}
    /SAPCAR/&&/\.EXE/{_sap_file_type="sapcar"}
-   !/IMDB_SERVER/&&!/IMDB_CLIENT/&&/IMDB/&&/\.SAR/{_sap_file_type="sap_db_hana_other"}
-   /IMDB_SERVER/&&/\.SAR/{_sap_file_type="sap_db_hana"}
-   /IMDB_CLIENT/&&/\.SAR/{_sap_file_type="sap_db_hana_client"}
+   !/IMDB_SERVER/&&!/IMDB_CLIENT/&&/IMDB/&&/\.SAR/{_sap_file_type="sap_hana_other"}
+   /IMDB_SERVER/&&/\.SAR/{_sap_file_type="sap_hana"}
+   /IMDB_CLIENT/&&/\.SAR/{_sap_file_type="sap_hana_client"}
    /SWPM/&&/\.SAR/{_sap_file_type="sap_swpm"}
    /SAPHOSTAGENT/&&/\.SAR/{_sap_file_type="sap_hostagent"}
    /igsexe/||/igshelper/{_sap_file_type="sap_igs"}
