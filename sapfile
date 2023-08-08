@@ -98,7 +98,7 @@ for _FILE in "$@"; do
    /SAPEXE_/||/SAPEXEDB_/{_sap_file_type="sap_kernel"}
    /SAPWEBDISP_/{_sap_file_type="sap_webdisp"}
    /SAPJVM/{_sap_file_type="sap_jvm"}
-   /ASEBC/{_sap_file_type="sap_db_ase_client"}
+   /ASEBC/{_sap_file_type="sapase_client"}
    /COMPLETE/{_sap_file_type="sap_hana_backup"}
    /S4/&&/HANA/&&/LANG/{_sap_file_type="sap_s4hana_lang"}
    /S4/&&/EXPORT/{_sap_file_type="sap_s4hana_export"}
@@ -117,14 +117,14 @@ for _FILE in "$@"; do
               ${_ARCHIVE_TYPE}. == "sapcar." ]]; then
          _SAP_FILE_TYPE=$(eval "${_list_content}" "${_FILE}" | awk '
          BEGIN{_sap_file_type="sap_unknown"}
-         /BD_SYBASE_ASE/{_sap_file_type="sap_db_ase"}
-         /ASEBC/{_sap_file_type="sap_db_ase_client"}
-         /MaxDB_7.9/{_sap_file_type="sap_db_maxdb"}
-         /19cinstall.sh/{_sap_file_type="sap_db_oracle"}
-         /OCL_LINUX_X86_64/{_sap_file_type="sap_db_oracle_client"}
-         /db2setup/{_sap_file_type="sap_db_db2"}
-         /db6_update_client.sh/{_sap_file_type="sap_db_db2_client"}
-         /db2aese_c.lic/{_sap_file_type="sap_db_db2_license"}
+         /BD_SYBASE_ASE/{_sap_file_type="sapase"}
+         /ASEBC/{_sap_file_type="sapase_client"}
+         /MaxDB_7.9/{_sap_file_type="sapmaxdb"}
+         /19cinstall.sh/{_sap_file_type="oracledb"}
+         /OCL_LINUX_X86_64/{_sap_file_type="oracledb_client"}
+         /db2setup/{_sap_file_type="ibmdb2"}
+         /db6_update_client.sh/{_sap_file_type="ibmdb2_client"}
+         /db2aese_c.lic/{_sap_file_type="ibmdb2_license"}
          /DATA_UNITS\/EXPORT/{_sap_file_type="sap_ecc_export"}
          /EXP[0-9]/{_sap_file_type="sap_ecc_ides_export"}
          /DATA_UNITS\/EXP[0-9]/{_sap_file_type="sap_nwas_abap_export"}
