@@ -31,7 +31,7 @@ usage () {
    echo "  --lsar_file=<FILE>         the name of the program to list the content of a RAR file, if different from 'lsar',"
    echo "                               either as the name of a file in one of the PATH directories or as an FQPN."
    echo "                               When specifying the 'unrar' program, it will be called with option 'lb'."
-   echo "  --sapcar_file=<FILE>       the name of the sapcar program if different from 'sapcar', either as the name of a file"
+   echo "  --sapcar_file=<FILE>       the name of the sapcar program, if different from 'sapcar', either as the name of a file"
    echo "                               in one of the PATH directories or as an FQPN."
    echo ""
    echo "Requires:"
@@ -69,7 +69,7 @@ while getopts "$options" opt; do
             lsar_file)
                if [[ ${!OPTIND-x} == x ]]; then
                   usage
-                  exit 1
+                  exit 0
                fi
                _LSAR_FILE="${!OPTIND}"
                OPTIND=$(( ${OPTIND} + 1 ))
@@ -81,7 +81,7 @@ while getopts "$options" opt; do
             sapcar_file)
                if [[ ${!OPTIND-x} == x ]]; then
                   usage
-                  exit 1
+                  exit 0
                fi
                _SAPCAR_FILE="${!OPTIND}"
                OPTIND=$(( ${OPTIND} + 1 ))
@@ -92,14 +92,14 @@ while getopts "$options" opt; do
                ;;
             help)
                usage
-               exit 1
+               exit 0
                ;;
             *)
                if [[ "$OPTERR" = 1 ]] && [[ "${options:0:1}" != ":" ]]; then
                   echo "Invalid option -${OPTARG}"
                   usage
                fi
-               exit 1
+               exit 0
                ;;
          esac;;
       l)
@@ -113,12 +113,12 @@ while getopts "$options" opt; do
          ;;
       h)
          usage
-         exit 1
+         exit 0
          ;;
       \?)
          echo "Invalid option -$OPTARG"
          usage
-         exit 1
+         exit 0
          ;;
    esac
 done
@@ -130,29 +130,13 @@ elif [[ "${_LSAR_FILE}" == *"unrar"* ]]; then
    _LSAR_COMMAND="${_LSAR_FILE} lb"
 fi
 
-if [[ "${_LSAR_FILE}" != *"/"* ]]; then
-   _LSAR_FILE=$(which ${_LSAR_FILE})
-fi
-if [[ "${_SAPCAR_FILE}" != *"/"* ]]; then
-   _SAPCAR_FILE=$(which ${_SAPCAR_FILE})
-fi
-
-if [[ ! -x ${_LSAR_FILE} ]]; then
-   echo "File ${_LSAR_FILE} does not exist or is not executable."
-   exit 1
-fi
-if [[ ! -x ${_SAPCAR_FILE} ]]; then
-   echo "File ${_SAPCAR_FILE} does not exist or is not executable."
-   exit 1
-fi
-
 _ARCHIVE_TYPE="other"
 
 for _FILE in "$@"; do
    _FILE_OUTPUT=$(file "${_FILE}" | sed 's,'"${_FILE}"': ,,')
    if [[ ${_FILE_OUTPUT}. == "data." ]] && [[ (${_FILE##*.} == "SAR" || ${_FILE##*.} == "sar") ]]; then
       _ARCHIVE_TYPE="sapcar"
-      _list_content="sapcar -tvf"
+      _list_content="${_SAPCAR_FILE} -tvf"
    else
       _ARCHIVE_TYPE=$(echo "${_FILE_OUTPUT}" | awk '
       BEGIN{_file_type="other"}
