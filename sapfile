@@ -42,9 +42,9 @@ usage () {
 _DELIMITER=";"
 
 # option defaults:
-_DISPLAY_HEADER="n"
 _DISPLAY_FILE_TYPE="n"
 _DISPLAY_ALL_INFO="n"
+_DISPLAY_HEADER="n"
 _SAPCAR_FILE='sapcar'
 _LSAR_FILE='lsar'
 
@@ -53,7 +53,7 @@ if [[ ${#} == 0 ]]; then
    exit 1
 fi
 
-options=":lHdDech-:"
+options=":leHh-:"
 while getopts "$options" opt; do
    case ${opt} in
       -)
@@ -228,6 +228,11 @@ for _FILE in "$@"; do
          /DATA_UNITS\/JAVA_EXPORT_JDMP/{_sap_file_type="sap_export_nwas_java"}
          /format error in header/{_sap_file_type="format_error_in_header"}
          END{print _sap_file_type}')
+         if [[ ${_SAP_FILE_TYPE}. == "sap_export_nwas_abap." && ${_GENERIC_FILE_TYPE}. == "zip." ]]; then
+            _SAP_FILE_TYPE=$(unzip -p "${_FILE}" LABEL.ASC | awk '
+            /SAP SOLUTION MANAGER/{_sap_file_type="sap_export_solman_abap"}
+            END{print _sap_file_type}')
+         fi
       else
          _SAP_FILE_TYPE="sap_unknown"
       fi
@@ -241,10 +246,24 @@ for _FILE in "$@"; do
    case ${_SAP_FILE_TYPE} in
       directory)
          _EXTRACT="n"
+         _EXTRACTION_DIRECTORY="none"
          ;;
       sapcar)
-         _TARGET_DIRECTORY="sap_swpm_download_basket"
+         _TARGET_DIRECTORY="auto"
+         _EXTRACTION_DIRECTORY="none"
          _EXTRACT="n"
+         _COPY="y"
+         ;;
+      sap_hostagent)
+         _TARGET_DIRECTORY="auto"
+         _EXTRACTION_DIRECTORY="none"
+         _EXTRACT="n"
+         _COPY="y"
+         ;;
+      saphana_client)
+         _TARGET_DIRECTORY="auto"
+         _EXTRACTION_DIRECTORY="sap_hana_client"
+         _EXTRACT="y"
          _COPY="y"
          ;;
       sapase|sapase_client)
@@ -258,23 +277,27 @@ for _FILE in "$@"; do
       ibmdb2|ibmdb2_client|ibmdb2_license)
          _TARGET_DIRECTORY="ibmdb2"
          ;;
-      saphana|saphana_client|saphana_other)
-         _TARGET_DIRECTORY="saphana"
+      saphana|saphana_other|sap_vch_afl)
+         _TARGET_DIRECTORY="sap_hana"
+         _EXTRACTION_DIRECTORY="none"
+         _EXTRACT="n"
          ;;
       sap_swpm)
          _TARGET_DIRECTORY="sap_swpm"
+         _EXTRACTION_DIRECTORY="none"
          _EXTRACT="n"
-         _COPY="y"
          ;;
       sap_kernel|sap_igs|sap_webdisp|sap_jvm)
          _TARGET_DIRECTORY="sap_swpm_download_basket"
+         _EXTRACTION_DIRECTORY="none"
          _EXTRACT="n"
-         _COPY="y"
          ;;
-      sap_hostagent)
+      sap_export*)
+         ;;
+      *)
          _TARGET_DIRECTORY="sap_swpm_download_basket"
+         _EXTRACTION_DIRECTORY="none"
          _EXTRACT="n"
-         _COPY="y"
          ;;
    esac
 
