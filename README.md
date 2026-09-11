@@ -7,7 +7,7 @@ Collection of shell scripts to be used in SAP environments
   - `zipinfo` (contained in the `unzip` RHEL package)
   - `sapcar` (SAP program to handle sapcar files; typical filename: SAPCAR_1115-70006178.EXE)
   
-  For displaying all file patterns and SAP file types supported by the program, you can use the following command:
+  For displaying the SAP file types supported by the program, use the following command:
 ```
-awk '!/BEGIN/&&!/END/&&/_sap_file_type=/{gsub (" ", ""); gsub ("\\{_sap_file_type=\"", ": "); gsub ("\"\\}", ""); print}' sapfile
+sapfile -s
 ```
